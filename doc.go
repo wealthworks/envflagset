@@ -7,18 +7,14 @@ import (
 	envcfg "tuluu.com/platform/envflagset"
 )
 
-type config struct {
-	HttpListen   string
-}
-
 var (
-	fs       *flag.FlagSet
-	Settings *config = &config{}
+	fs           *flag.FlagSet
+	HttpListen   string
 )
 
 func init() {
 	fs = envcfg.New("app", "0.0.1")
-	fs.StringVar(&Settings.HttpListen, "http-listen", "localhost:5000", "bind address and port")
+	fs.StringVar(&HttpListen, "http-listen", "localhost:5000", "bind address and port")
 }
 
 func main() {
