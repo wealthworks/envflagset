@@ -41,19 +41,19 @@ func Parse() {
 		os.Exit(0)
 	}
 
-	err := SetFlagsFromEnv(fs, cn+"_")
+	err := ParseEnv(fs, cn+"_")
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		log.Fatalf("ParseEnv error: %v", err)
 	}
 
 }
 
-// SetFlagsFromEnv parses all registered flags in the given flagset,
+// ParseEnv parses all registered flags in the given flagset,
 // and if they are not already set it attempts to set their values from
 // environment variables. Environment variables take the name of the flag but
 // are UPPERCASE, have the prefix "PREFIX_", and any dashes are replaced by
 // underscores - for example: some-flag => PREFIX_SOME_FLAG
-func SetFlagsFromEnv(fs *flag.FlagSet, prefix string) error {
+func ParseEnv(fs *flag.FlagSet, prefix string) error {
 	var err error
 	alreadySet := make(map[string]bool)
 	fs.Visit(func(f *flag.Flag) {

@@ -4,7 +4,7 @@ package envflagset
 
 import (
 	"flag"
-	envcfg "tuluu.com/platform/envflagset"
+	envcfg "lcgc/platform/envflagset"
 )
 
 var (
