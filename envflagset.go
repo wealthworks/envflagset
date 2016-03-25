@@ -13,6 +13,7 @@ var (
 	ver         string
 	fs          *flag.FlagSet
 	showVersion bool
+	parsed      bool
 )
 
 func New(name, version string) *flag.FlagSet {
@@ -20,10 +21,20 @@ func New(name, version string) *flag.FlagSet {
 	ver = version
 	fs = flag.NewFlagSet(name, flag.ExitOnError)
 	fs.BoolVar(&showVersion, "version", false, "Print the version and exit")
+
 	return fs
 }
 
 func Parse() {
+	if parsed {
+		return
+	}
+	parsed = true
+	// patch for flag.CommandLine (ex: golang/glog)
+	flag.VisitAll(func(ff *flag.Flag) {
+		fs.Var(ff.Value, ff.Name, ff.Usage)
+	})
+
 	perr := fs.Parse(os.Args[1:])
 	switch perr {
 	case nil:
