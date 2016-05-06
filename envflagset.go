@@ -10,6 +10,7 @@ import (
 
 var (
 	cn          string
+	prefix      string
 	ver         string
 	fs          *flag.FlagSet
 	showVersion bool
@@ -18,11 +19,22 @@ var (
 
 func New(name, version string) *flag.FlagSet {
 	cn = name
+	SetPrefix(name)
 	ver = version
 	fs = flag.NewFlagSet(name, flag.ExitOnError)
 	fs.BoolVar(&showVersion, "version", false, "Print the version and exit")
 
 	return fs
+}
+
+func SetPrefix(name string) {
+	if name != "" {
+		prefix = toEnvName(name) + "_"
+	}
+}
+
+func toEnvName(name string) string {
+	return strings.ToUpper(strings.Replace(name, "-", "_", -1))
 }
 
 func Parse() {
@@ -43,16 +55,16 @@ func Parse() {
 	default:
 		os.Exit(2)
 	}
-	if len(fs.Args()) != 0 {
-		log.Fatalf("'%s' is not a valid flag", fs.Arg(0))
-	}
+	// if len(fs.Args()) != 0 {
+	// 	log.Fatalf("'%s' is not a valid flag", fs.Arg(0))
+	// }
 
 	if showVersion {
 		fmt.Printf("%s version %s\n", cn, ver)
 		os.Exit(0)
 	}
 
-	err := ParseEnv(fs, cn+"_")
+	err := ParseEnv(fs, prefix)
 	if err != nil {
 		log.Fatalf("ParseEnv error: %v", err)
 	}
@@ -71,15 +83,9 @@ func ParseEnv(fs *flag.FlagSet, prefix string) error {
 		alreadySet[f.Name] = true
 	})
 
-	if prefix == "" {
-		prefix = "_"
-	} else {
-		prefix = strings.ToUpper(strings.Replace(prefix, "-", "_", -1))
-	}
-
 	fs.VisitAll(func(f *flag.Flag) {
 		if !alreadySet[f.Name] {
-			key := prefix + strings.ToUpper(strings.Replace(f.Name, "-", "_", -1))
+			key := prefix + toEnvName(f.Name)
 			val := os.Getenv(key)
 			if val != "" {
 				if serr := fs.Set(f.Name, val); serr != nil {
