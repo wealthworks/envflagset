@@ -14,6 +14,7 @@ var (
 	ver         string
 	fs          *flag.FlagSet
 	showVersion bool
+	dumpDefault bool
 	parsed      bool
 )
 
@@ -23,6 +24,7 @@ func New(name, version string) *flag.FlagSet {
 	ver = version
 	fs = flag.NewFlagSet(name, flag.ExitOnError)
 	fs.BoolVar(&showVersion, "version", false, "Print the version and exit")
+	fs.BoolVar(&dumpDefault, "dump-env", false, "output all default env values")
 
 	return fs
 }
@@ -42,6 +44,12 @@ func Parse() {
 		return
 	}
 	parsed = true
+
+	if os.Args[1] == "-dump-env" {
+		Dump(fs, prefix)
+		os.Exit(0)
+	}
+
 	// patch for flag.CommandLine (ex: golang/glog)
 	flag.VisitAll(func(ff *flag.Flag) {
 		fs.Var(ff.Value, ff.Name, ff.Usage)
@@ -95,4 +103,14 @@ func ParseEnv(fs *flag.FlagSet, prefix string) error {
 		}
 	})
 	return err
+}
+
+func Dump(fs *flag.FlagSet, prefix string) {
+	fs.VisitAll(func(f *flag.Flag) {
+		if strings.HasPrefix(f.Name, "dump") || f.Name == "version" {
+			return
+		}
+		key := prefix + toEnvName(f.Name)
+		fmt.Printf("%s=%q\n", key, f.DefValue)
+	})
 }
