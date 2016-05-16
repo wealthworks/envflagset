@@ -45,7 +45,7 @@ func Parse() {
 	}
 	parsed = true
 
-	if os.Args[1] == "-dump-env" {
+	if len(os.Args) > 1 && os.Args[1] == "-dump-env" {
 		Dump(fs, prefix)
 		os.Exit(0)
 	}
