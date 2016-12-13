@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -68,7 +69,7 @@ func Parse() {
 	// }
 
 	if showVersion {
-		fmt.Printf("%s version %s\n", cn, ver)
+		fmt.Printf("%s version %s %s\n", cn, ver, runtime.Version())
 		os.Exit(0)
 	}
 
