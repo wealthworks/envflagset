@@ -23,7 +23,8 @@ func New(name, version string) *flag.FlagSet {
 	cn = name
 	SetPrefix(name)
 	ver = version
-	fs = flag.NewFlagSet(name, flag.ExitOnError)
+	// fs = flag.NewFlagSet(name, flag.ExitOnError)
+	fs = flag.CommandLine
 	fs.BoolVar(&showVersion, "version", false, "Print the version and exit")
 	fs.BoolVar(&dumpDefault, "dump-env", false, "output all default env values")
 
@@ -51,11 +52,6 @@ func Parse() {
 		os.Exit(0)
 	}
 
-	// patch for flag.CommandLine (ex: golang/glog)
-	flag.VisitAll(func(ff *flag.Flag) {
-		fs.Var(ff.Value, ff.Name, ff.Usage)
-	})
-
 	perr := fs.Parse(os.Args[1:])
 	switch perr {
 	case nil:
@@ -64,15 +60,11 @@ func Parse() {
 	default:
 		os.Exit(2)
 	}
-	// if len(fs.Args()) != 0 {
-	// 	log.Fatalf("'%s' is not a valid flag", fs.Arg(0))
-	// }
 
 	if showVersion {
 		fmt.Printf("%s version %s %s\n", cn, ver, runtime.Version())
 		os.Exit(0)
 	}
-	flag.Parse()
 
 	err := ParseEnv(fs, prefix)
 	if err != nil {
