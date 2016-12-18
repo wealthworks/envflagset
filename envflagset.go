@@ -72,6 +72,7 @@ func Parse() {
 		fmt.Printf("%s version %s %s\n", cn, ver, runtime.Version())
 		os.Exit(0)
 	}
+	flag.Parse()
 
 	err := ParseEnv(fs, prefix)
 	if err != nil {
