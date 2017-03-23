@@ -19,14 +19,19 @@ var (
 	parsed      bool
 )
 
+const (
+	fVersion = "-version"
+	fDumpEnv = "-dump-env"
+)
+
 func New(name, version string) *flag.FlagSet {
 	cn = name
 	SetPrefix(name)
 	ver = version
 	// fs = flag.NewFlagSet(name, flag.ExitOnError)
 	fs = flag.CommandLine
-	fs.BoolVar(&showVersion, "version", false, "Print the version and exit")
-	fs.BoolVar(&dumpDefault, "dump-env", false, "output all default env values")
+	fs.BoolVar(&showVersion, fVersion, false, "Print the version and exit")
+	fs.BoolVar(&dumpDefault, fDumpEnv, false, "output all default env values")
 
 	return fs
 }
@@ -47,7 +52,7 @@ func Parse() {
 	}
 	parsed = true
 
-	if len(os.Args) > 1 && os.Args[1] == "-dump-env" {
+	if len(os.Args) > 1 && strings.HasSuffix(os.Args[1], fDumpEnv) {
 		Dump(fs, prefix)
 		os.Exit(0)
 	}
@@ -101,7 +106,7 @@ func ParseEnv(fs *flag.FlagSet, prefix string) error {
 
 func Dump(fs *flag.FlagSet, prefix string) {
 	fs.VisitAll(func(f *flag.Flag) {
-		if strings.HasPrefix(f.Name, "dump") || f.Name == "version" {
+		if len(f.Name) < 2 || strings.HasPrefix(f.Name, "-") {
 			return
 		}
 		key := prefix + toEnvName(f.Name)
