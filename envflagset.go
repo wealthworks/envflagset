@@ -106,7 +106,7 @@ func ParseEnv(fs *flag.FlagSet, prefix string) error {
 
 func Dump(fs *flag.FlagSet, prefix string) {
 	fs.VisitAll(func(f *flag.Flag) {
-		if len(f.Name) < 2 || strings.HasPrefix(f.Name, "-") {
+		if len(f.Name) < 2 || f.Name == fDumpEnv || f.Name == fVersion {
 			return
 		}
 		key := prefix + toEnvName(f.Name)
