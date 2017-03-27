@@ -20,8 +20,8 @@ var (
 )
 
 const (
-	fVersion = "-version"
-	fDumpEnv = "-dump-env"
+	fVersion = "Ver"
+	fDumpEnv = "DumpEnv"
 )
 
 func New(name, version string) *flag.FlagSet {
